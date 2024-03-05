@@ -1,0 +1,58 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+*.idea
+*.iml
+# Maven generated files
+target/
+*.war
+*.ear
+*.jar
+
+# Output directories
+out/
+bin/
+
+# OS specific temporary files
+*~
+*.tmp
+*.log
+
+# IDE specific logs
+*.idea_modules.xml
+
+# Generated test coverage reports
+*/coverage/.xml
+
+# Dependency downloaded directory (adjust if using a different package manager)
+**/.m2/repository/
