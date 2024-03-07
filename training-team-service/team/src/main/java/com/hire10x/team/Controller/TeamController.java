@@ -1,6 +1,5 @@
 package com.hire10x.team.Controller;
 
-import com.hire10x.team.Entity.Team;
 import com.hire10x.team.Models.TeamModel;
 import com.hire10x.team.Models.TeamModelResponse;
 import com.hire10x.team.Service.TeamService;
@@ -18,28 +17,23 @@ public class TeamController {
     @Autowired
     private TeamService teamService;
 
-    @Autowired
-    TeamModelResponse response;
-
     private static final Logger logger = Logger.getLogger(TeamController.class.getName());
 
     @PostMapping({"/teams"})
     public ResponseEntity createTeam(@Valid @RequestBody TeamModel teamModel) {
-        Team team = this.teamService.createTeam(teamModel);
-        response.setTeamId(team.getTeamId() != null ? team.getTeamId().toString() : "");
-        response.setMessage("Team created successfully");
-
-        logger.info("New team created with ID: " + response.getTeamId());
-
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        TeamModelResponse teamModelResponse = this.teamService.createTeam(teamModel);
+        logger.info("New team created with ID: " + teamModelResponse.getTeamId());
+        return new ResponseEntity<>(teamModelResponse, HttpStatus.CREATED);
     }
     @GetMapping({"/search"})
     public ResponseEntity getTeam(@Valid @RequestParam String teamName){
-        TeamModel teamModel = teamService.getTeam(teamName);
+        ResponseEntity teamModel = teamService.getTeam(teamName);
         return new ResponseEntity<>(teamModel, HttpStatus.OK);
+    }
+    @PutMapping({"/update/{teamId}"})
+    public ResponseEntity updateTeam(@RequestBody TeamModel teamModel, @PathVariable Long teamId){
+        logger.info("Updating team: " + teamId);
+        return teamService.updateTeam(teamModel,teamId);
 
     }
-
-
-
 }

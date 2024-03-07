@@ -1,13 +1,15 @@
 package com.hire10x.team.Service;
 
-import com.hire10x.team.Entity.Team;
 import com.hire10x.team.Models.TeamModel;
+import com.hire10x.team.Models.TeamModelResponse;
+import org.springframework.http.ResponseEntity;
 
-import java.util.List;
 
 public interface TeamService {
 
-    Team createTeam(TeamModel teamModel);
+    TeamModelResponse createTeam(TeamModel teamModel);
 
-    TeamModel getTeam(String teamName);
+    ResponseEntity<?> getTeam(String teamName);
+
+    ResponseEntity<?> updateTeam(TeamModel teamModel, Long teamId);
 }
