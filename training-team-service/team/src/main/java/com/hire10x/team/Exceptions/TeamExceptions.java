@@ -22,7 +22,6 @@ public class TeamExceptions extends RuntimeException {
         String errorMessage = "No team found with the specified ID";
         return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
     }
-
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<String> handleDataAccessException(DataAccessException ex) {
         String errorMessage = "An error occurred while updating the team";
