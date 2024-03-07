@@ -1,5 +1,6 @@
-package com.hire10x.team.Controller;
+ package com.hire10x.team.Controller;
 
+import com.hire10x.team.Entity.Team;
 import com.hire10x.team.Models.TeamModel;
 import com.hire10x.team.Models.TeamModelResponse;
 import com.hire10x.team.Service.TeamService;
@@ -27,13 +28,13 @@ public class TeamController {
     }
     @GetMapping({"/search"})
     public ResponseEntity getTeam(@Valid @RequestParam String teamName){
-        ResponseEntity teamModel = teamService.getTeam(teamName);
+        TeamModel teamModel = teamService.getTeam(teamName);
         return new ResponseEntity<>(teamModel, HttpStatus.OK);
     }
     @PutMapping({"/update/{teamId}"})
     public ResponseEntity updateTeam(@RequestBody TeamModel teamModel, @PathVariable Long teamId){
         logger.info("Updating team: " + teamId);
-        return teamService.updateTeam(teamModel,teamId);
-
+        Team team =  teamService.updateTeam(teamModel,teamId);
+        return new ResponseEntity<>(team, HttpStatus.OK);
     }
 }

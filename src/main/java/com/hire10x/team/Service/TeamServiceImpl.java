@@ -7,9 +7,10 @@ import com.hire10x.team.Models.TeamModel;
 import com.hire10x.team.Models.TeamModelResponse;
 import com.hire10x.team.Models.TeamUpdate;
 import com.hire10x.team.Repository.TeamRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -19,9 +20,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service
-public class TeamServiceImp implements TeamService {
+public class TeamServiceImpl implements TeamService {
 
-    private static final Logger logger = Logger.getLogger(TeamServiceImp.class.getName());
+    private static final Logger logger = Logger.getLogger(TeamServiceImpl.class.getName());
 
     @Autowired
     TeamRepository teamRepo;
@@ -38,13 +39,18 @@ public class TeamServiceImp implements TeamService {
     public TeamModelResponse createTeam(TeamModel teamModel) {
         Team team = this.teamMapper.modelToEntity(teamModel);
         Optional<Team> existingTeam = this.teamRepo.findByName(team.getName());
-
         if (existingTeam.isPresent()) {
             logger.log(Level.WARNING, "Team name already in use: " + team.getName());
             throw new TeamDuplicateException("Team name already in use");
             } else {
                 team.setCreatedAt(new Date());
-                Team savedTeam = this.teamRepo.save(team);
+            Team savedTeam = null;
+            try {
+                savedTeam = this.teamRepo.save(team);
+            } catch (Exception e) {
+                throw new DataAccessResourceFailureException("An error occurred while saving the team details");
+            }
+
                 logger.log(Level.INFO, "Team created: " + savedTeam.getName());
                 response.setTeamId(savedTeam.getTeamId() != null ? savedTeam.getTeamId().toString() : "");
                 response.setMessage("Team created successfully");
@@ -53,30 +59,25 @@ public class TeamServiceImp implements TeamService {
     }
 
     @Override
-    public ResponseEntity<?> getTeam(String teamName) {
+    public TeamModel getTeam(String teamName) {
         Optional<Team> teamOptional = teamRepo.findByName(teamName);
-
         if (teamOptional.isPresent()) {
             Team team = teamOptional.get();
             TeamModel teamModel = teamMapper.entityToModel(team);
-            return new ResponseEntity<>(teamModel, HttpStatus.OK);
+            return teamModel;
         } else {
-            return new ResponseEntity<>("No team found with team name: " + teamName, HttpStatus.NOT_FOUND);
+            throw new EntityNotFoundException("No team details present for given teamName");
         }
     }
 
     @Override
-    public ResponseEntity<?> updateTeam(TeamModel teamModel, Long teamId) {
+    public Team updateTeam(TeamModel teamModel, Long teamId) {
         Optional<Team> teamOptional = teamRepo.findById(teamId);
-
         if (teamOptional.isEmpty()) {
-
             logger.info("No Team found with ID: " + teamId);
-            return new ResponseEntity<>("No team found with the specified ID", HttpStatus.NOT_FOUND);
+            throw new EntityNotFoundException("No team details present for given teamId");
         }
-
         Team existingTeam = teamOptional.get();
-
         if (teamModel.getName() != null) {
             existingTeam.setName(teamModel.getName());
         }
@@ -97,11 +98,13 @@ public class TeamServiceImp implements TeamService {
         }
 
         existingTeam.setModifiedAt(new Date());
-
-        Team updatedTeam = teamRepo.save(existingTeam);
-
+        Team updatedTeam = null;
+        try {
+            updatedTeam = teamRepo.save(existingTeam);
+        } catch (Exception e) {
+            throw new DataAccessResourceFailureException("An error occurred while updating the team details");
+        }
         logger.info("Team with ID " + teamId + " updated successfully");
-
-        return new ResponseEntity<>(updatedTeam, HttpStatus.OK);
+        return updatedTeam;
     }
 }
