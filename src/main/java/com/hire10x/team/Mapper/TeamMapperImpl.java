@@ -24,7 +24,6 @@ public class TeamMapperImpl implements TeamMapper {
         teamModel.setTeamId(team.getTeamId());
         teamModel.setName(team.getName());
         teamModel.setDescription(team.getDescription());
-        teamModel.setUserIds(team.getUserIds());
         teamModel.setCreatedAt(team.getCreatedAt());
         teamModel.setUpdatedAt(team.getModifiedAt());
         return teamModel;
