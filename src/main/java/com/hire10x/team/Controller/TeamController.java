@@ -3,6 +3,7 @@
 import com.hire10x.team.Entity.Team;
 import com.hire10x.team.Models.TeamModel;
 import com.hire10x.team.Models.TeamModelResponse;
+import com.hire10x.team.Models.TeamUpdate;
 import com.hire10x.team.Service.TeamService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/v1")
+@CrossOrigin
 public class TeamController {
     @Autowired
     private TeamService teamService;
@@ -34,7 +36,7 @@ public class TeamController {
     @PutMapping({"/update/{teamId}"})
     public ResponseEntity updateTeam(@RequestBody TeamModel teamModel, @PathVariable Long teamId){
         logger.info("Updating team: " + teamId);
-        Team team =  teamService.updateTeam(teamModel,teamId);
-        return new ResponseEntity<>(team, HttpStatus.OK);
+        TeamUpdate teamUpdate =  teamService.updateTeam(teamModel,teamId);
+        return new ResponseEntity<>(teamUpdate, HttpStatus.OK);
     }
 }

@@ -3,6 +3,7 @@ package com.hire10x.team.Service;
 import com.hire10x.team.Entity.Team;
 import com.hire10x.team.Models.TeamModel;
 import com.hire10x.team.Models.TeamModelResponse;
+import com.hire10x.team.Models.TeamUpdate;
 import org.springframework.http.ResponseEntity;
 
 
@@ -12,5 +13,5 @@ public interface TeamService {
 
     TeamModel getTeam(String teamName);
 
-    Team updateTeam(TeamModel teamModel, Long teamId);
+    TeamUpdate updateTeam(TeamModel teamModel, Long teamId);
 }

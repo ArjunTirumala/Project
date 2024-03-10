@@ -1,5 +1,6 @@
 package com.hire10x.team.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hire10x.team.Entity.Team;
 import com.hire10x.team.Exceptions.TeamDuplicateException;
 import com.hire10x.team.Mapper.TeamMapper;
@@ -71,7 +72,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Team updateTeam(TeamModel teamModel, Long teamId) {
+    public TeamUpdate updateTeam(TeamModel teamModel, Long teamId) {
         Optional<Team> teamOptional = teamRepo.findById(teamId);
         if (teamOptional.isEmpty()) {
             logger.info("No Team found with ID: " + teamId);
@@ -98,13 +99,15 @@ public class TeamServiceImpl implements TeamService {
         }
 
         existingTeam.setModifiedAt(new Date());
-        Team updatedTeam = null;
+        Team team = null;
         try {
-            updatedTeam = teamRepo.save(existingTeam);
+            team = teamRepo.save(existingTeam);
         } catch (Exception e) {
             throw new DataAccessResourceFailureException("An error occurred while updating the team details");
         }
+        ObjectMapper objectMapper = new ObjectMapper();
+        TeamUpdate teamUpdate = objectMapper.convertValue(team, TeamUpdate.class);
         logger.info("Team with ID " + teamId + " updated successfully");
-        return updatedTeam;
+        return teamUpdate;
     }
 }
