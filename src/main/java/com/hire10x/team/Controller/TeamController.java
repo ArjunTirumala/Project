@@ -2,6 +2,7 @@
 
 import com.hire10x.team.Entity.Team;
 import com.hire10x.team.Models.TeamModel;
+import com.hire10x.team.Models.TeamModelRequest;
 import com.hire10x.team.Models.TeamModelResponse;
 import com.hire10x.team.Models.TeamUpdate;
 import com.hire10x.team.Service.TeamService;
@@ -23,8 +24,8 @@ public class TeamController {
     private static final Logger logger = Logger.getLogger(TeamController.class.getName());
 
     @PostMapping({"/teams"})
-    public ResponseEntity createTeam(@Valid @RequestBody TeamModel teamModel) {
-        TeamModelResponse teamModelResponse = this.teamService.createTeam(teamModel);
+    public ResponseEntity createTeam(@Valid @RequestBody TeamModelRequest teamModelRequest) {
+        TeamModelResponse teamModelResponse = this.teamService.createTeam(teamModelRequest);
         logger.info("New team created with ID: " + teamModelResponse.getTeamId());
         return new ResponseEntity<>(teamModelResponse, HttpStatus.CREATED);
     }
@@ -34,9 +35,9 @@ public class TeamController {
         return new ResponseEntity<>(teamModel, HttpStatus.OK);
     }
     @PutMapping({"/update/{teamId}"})
-    public ResponseEntity updateTeam(@RequestBody TeamModel teamModel, @PathVariable Long teamId){
+    public ResponseEntity updateTeam(@RequestBody TeamModelRequest teamModelRequest, @PathVariable Long teamId){
         logger.info("Updating team: " + teamId);
-        TeamUpdate teamUpdate =  teamService.updateTeam(teamModel,teamId);
+        TeamUpdate teamUpdate =  teamService.updateTeam(teamModelRequest,teamId);
         return new ResponseEntity<>(teamUpdate, HttpStatus.OK);
     }
 }

@@ -5,6 +5,7 @@ import com.hire10x.team.Entity.Team;
 import com.hire10x.team.Exceptions.TeamDuplicateException;
 import com.hire10x.team.Mapper.TeamMapper;
 import com.hire10x.team.Models.TeamModel;
+import com.hire10x.team.Models.TeamModelRequest;
 import com.hire10x.team.Models.TeamModelResponse;
 import com.hire10x.team.Models.TeamUpdate;
 import com.hire10x.team.Repository.TeamRepository;
@@ -37,8 +38,8 @@ public class TeamServiceImpl implements TeamService {
     @Autowired
     TeamUpdate teamUpdate;
 
-    public TeamModelResponse createTeam(TeamModel teamModel) {
-        Team team = this.teamMapper.modelToEntity(teamModel);
+    public TeamModelResponse createTeam(TeamModelRequest teamModelRequest) {
+        Team team = this.teamMapper.requestModelToEntity(teamModelRequest);
         Optional<Team> existingTeam = this.teamRepo.findByName(team.getName());
         if (existingTeam.isPresent()) {
             logger.log(Level.WARNING, "Team name already in use: " + team.getName());
@@ -72,22 +73,22 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamUpdate updateTeam(TeamModel teamModel, Long teamId) {
+    public TeamUpdate updateTeam(TeamModelRequest teamModelRequest, Long teamId) {
         Optional<Team> teamOptional = teamRepo.findById(teamId);
         if (teamOptional.isEmpty()) {
             logger.info("No Team found with ID: " + teamId);
             throw new EntityNotFoundException("No team details present for given teamId");
         }
         Team existingTeam = teamOptional.get();
-        if (teamModel.getName() != null) {
-            existingTeam.setName(teamModel.getName());
+        if (teamModelRequest.getName() != null) {
+            existingTeam.setName(teamModelRequest.getName());
         }
-            if (teamModel.getDescription() != null) {
-            existingTeam.setDescription(teamModel.getDescription());
+            if (teamModelRequest.getDescription() != null) {
+            existingTeam.setDescription(teamModelRequest.getDescription());
         }
-            if (teamModel.getUserIds() != null) {
+            if (teamModelRequest.getUserIds() != null) {
             List<String> existingUserIds = existingTeam.getUserIds();
-            List<String> newUserIds = teamModel.getUserIds();
+            List<String> newUserIds = teamModelRequest.getUserIds();
 
             for (String userId : newUserIds) {
                 if (!existingUserIds.contains(userId)) {
