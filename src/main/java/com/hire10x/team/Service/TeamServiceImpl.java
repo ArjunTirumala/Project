@@ -11,10 +11,10 @@ import com.hire10x.team.Models.TeamUpdate;
 import com.hire10x.team.Repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +39,9 @@ public class TeamServiceImpl implements TeamService {
     TeamUpdate teamUpdate;
 
     public TeamModelResponse createTeam(TeamModelRequest teamModelRequest) {
+        if(teamModelRequest.getName() == null) {
+            throw new NullPointerException("Team name cannot be null");
+        }
         Team team = this.teamMapper.requestModelToEntity(teamModelRequest);
         Optional<Team> existingTeam = this.teamRepo.findByName(team.getName());
         if (existingTeam.isPresent()) {
@@ -67,6 +70,21 @@ public class TeamServiceImpl implements TeamService {
             Team team = teamOptional.get();
             TeamModel teamModel = teamMapper.entityToModel(team);
             return teamModel;
+        } else {
+            throw new EntityNotFoundException("No team details present for given teamName");
+        }
+    }
+
+    @Override
+    public List<TeamModel> searchTeam(String teamName) {
+        List<Team> teamList = teamRepo.searchByName(teamName);
+        if (!teamList.isEmpty()) {
+            List<TeamModel> teamModelList = new ArrayList<>();
+            for(Team team: teamList) {
+                TeamModel teamModel = teamMapper.entityToModel(team);
+                teamModelList.add(teamModel);
+            }
+            return teamModelList;
         } else {
             throw new EntityNotFoundException("No team details present for given teamName");
         }

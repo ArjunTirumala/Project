@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -34,6 +35,13 @@ public class TeamController {
         TeamModel teamModel = teamService.getTeam(teamName);
         return new ResponseEntity<>(teamModel, HttpStatus.OK);
     }
+
+    @GetMapping({"/like/search"})
+    public ResponseEntity searchTeam(@Valid @RequestParam String teamName){
+        List<TeamModel> teamModelList = teamService.searchTeam(teamName);
+        return new ResponseEntity<>(teamModelList, HttpStatus.OK);
+    }
+
     @PutMapping({"/update/{teamId}"})
     public ResponseEntity updateTeam(@RequestBody TeamModelRequest teamModelRequest, @PathVariable Long teamId){
         logger.info("Updating team: " + teamId);

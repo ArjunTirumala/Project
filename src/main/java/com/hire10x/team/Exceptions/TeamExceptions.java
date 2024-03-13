@@ -2,6 +2,7 @@ package com.hire10x.team.Exceptions;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
+import org.apache.coyote.BadRequestException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
@@ -15,8 +16,8 @@ import java.util.Map;
 
 @ControllerAdvice
 public class TeamExceptions extends RuntimeException {
-    @ExceptionHandler(TeamDuplicateException.class)
-    public ResponseEntity<Map> handleBadRequestException(TeamDuplicateException ex) {
+    @ExceptionHandler({TeamDuplicateException.class, NullPointerException.class})
+    public ResponseEntity<Map> handleBadRequestException(Exception ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("ErrorMessage", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
