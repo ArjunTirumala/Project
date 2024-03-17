@@ -39,7 +39,7 @@ public class TeamServiceImpl implements TeamService {
     TeamUpdate teamUpdate;
 
     public TeamModelResponse createTeam(TeamModelRequest teamModelRequest) {
-        if(teamModelRequest.getName() == null) {
+        if (teamModelRequest.getName() == null) {
             throw new NullPointerException("Team name cannot be null");
         }
         Team team = this.teamMapper.requestModelToEntity(teamModelRequest);
@@ -47,19 +47,18 @@ public class TeamServiceImpl implements TeamService {
         if (existingTeam.isPresent()) {
             logger.log(Level.WARNING, "Team name already in use: " + team.getName());
             throw new TeamDuplicateException("Team name already in use");
-            } else {
-                team.setCreatedAt(new Date());
+        } else {
+            team.setCreatedAt(new Date());
             Team savedTeam = null;
             try {
                 savedTeam = this.teamRepo.save(team);
             } catch (Exception e) {
                 throw new DataAccessResourceFailureException("An error occurred while saving the team details");
             }
-
-                logger.log(Level.INFO, "Team created: " + savedTeam.getName());
-                response.setTeamId(savedTeam.getTeamId() != null ? savedTeam.getTeamId().toString() : "");
-                response.setMessage("Team created successfully");
-                return response;
+            logger.log(Level.INFO, "Team created: " + savedTeam.getName());
+            response.setTeamId(savedTeam.getTeamId() != null ? String.valueOf(savedTeam.getTeamId()) : null);
+            response.setMessage("Team created successfully");
+            return response;
         }
     }
 

@@ -31,61 +31,41 @@ class TeamControllerTest {
 
     @Test
     void createTeam_shouldReturnCreatedResponse() {
-        // Arrange
         TeamModelRequest teamModelRequest = new TeamModelRequest();
         TeamModelResponse teamModelResponse = new TeamModelResponse();
         when(teamService.createTeam(teamModelRequest)).thenReturn(teamModelResponse);
-
-        // Act
         ResponseEntity<TeamModelResponse> responseEntity = teamController.createTeam(teamModelRequest);
-
-        // Assert
         verify(teamService, times(1)).createTeam(teamModelRequest);
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
     }
 
     @Test
     void getTeam_shouldReturnTeamModel() {
-        // Arrange
         String teamName = "ExampleTeam";
         TeamModel teamModel = new TeamModel();
         when(teamService.getTeam(teamName)).thenReturn(teamModel);
-
-        // Act
         ResponseEntity<TeamModel> responseEntity = teamController.getTeam(teamName);
-
-        // Assert
         verify(teamService, times(1)).getTeam(teamName);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 
     @Test
     void searchTeam_shouldReturnTeamModelList() {
-        // Arrange
         String teamName = "ExampleTeam";
         List<TeamModel> teamModelList = Collections.singletonList(new TeamModel());
         when(teamService.searchTeam(teamName)).thenReturn(teamModelList);
-
-        // Act
         ResponseEntity<List<TeamModel>> responseEntity = teamController.searchTeam(teamName);
-
-        // Assert
         verify(teamService, times(1)).searchTeam(teamName);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 
     @Test
     void updateTeam_shouldReturnTeamUpdate() {
-        // Arrange
         Long teamId = 1L;
         TeamModelRequest teamModelRequest = new TeamModelRequest();
         TeamUpdate teamUpdate = new TeamUpdate();
         when(teamService.updateTeam(teamModelRequest, teamId)).thenReturn(teamUpdate);
-
-        // Act
         ResponseEntity<TeamUpdate> responseEntity = teamController.updateTeam(teamModelRequest, teamId);
-
-        // Assert
         verify(teamService, times(1)).updateTeam(teamModelRequest, teamId);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
