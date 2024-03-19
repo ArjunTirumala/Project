@@ -1,5 +1,7 @@
 package com.hire10x.team.Service;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hire10x.team.Entity.Team;
 import com.hire10x.team.Exceptions.TeamDuplicateException;
@@ -7,7 +9,6 @@ import com.hire10x.team.Mapper.TeamMapper;
 import com.hire10x.team.Models.TeamModel;
 import com.hire10x.team.Models.TeamModelRequest;
 import com.hire10x.team.Models.TeamModelResponse;
-import com.hire10x.team.Models.TeamUpdate;
 import com.hire10x.team.Repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,6 @@ public class TeamServiceImpl implements TeamService {
 
     @Autowired
     TeamModelResponse response;
-
-    @Autowired
-    TeamUpdate teamUpdate;
 
     public TeamModelResponse createTeam(TeamModelRequest teamModelRequest) {
         if (teamModelRequest.getName() == null) {
@@ -90,7 +88,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamUpdate updateTeam(TeamModelRequest teamModelRequest, Long teamId) {
+    public TeamModel updateTeam(TeamModelRequest teamModelRequest, Long teamId) {
         Optional<Team> teamOptional = teamRepo.findById(teamId);
         if (teamOptional.isEmpty()) {
             logger.info("No Team found with ID: " + teamId);
@@ -123,9 +121,8 @@ public class TeamServiceImpl implements TeamService {
         } catch (Exception e) {
             throw new DataAccessResourceFailureException("An error occurred while updating the team details");
         }
-        ObjectMapper objectMapper = new ObjectMapper();
-        TeamUpdate teamUpdate = objectMapper.convertValue(team, TeamUpdate.class);
+        TeamModel teamModel = teamMapper.entityToModel(team);
         logger.info("Team with ID " + teamId + " updated successfully");
-        return teamUpdate;
+        return teamModel;
     }
 }

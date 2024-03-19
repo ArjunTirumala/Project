@@ -4,7 +4,6 @@ import com.hire10x.team.Controller.TeamController;
 import com.hire10x.team.Models.TeamModel;
 import com.hire10x.team.Models.TeamModelRequest;
 import com.hire10x.team.Models.TeamModelResponse;
-import com.hire10x.team.Models.TeamUpdate;
 import com.hire10x.team.Service.TeamService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,9 +62,9 @@ class TeamControllerTest {
     void updateTeam_shouldReturnTeamUpdate() {
         Long teamId = 1L;
         TeamModelRequest teamModelRequest = new TeamModelRequest();
-        TeamUpdate teamUpdate = new TeamUpdate();
-        when(teamService.updateTeam(teamModelRequest, teamId)).thenReturn(teamUpdate);
-        ResponseEntity<TeamUpdate> responseEntity = teamController.updateTeam(teamModelRequest, teamId);
+        TeamModel teamModel = new TeamModel();
+        when(teamService.updateTeam(teamModelRequest, teamId)).thenReturn(teamModel);
+        ResponseEntity<TeamModel> responseEntity = teamController.updateTeam(teamModelRequest, teamId);
         verify(teamService, times(1)).updateTeam(teamModelRequest, teamId);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
