@@ -1,8 +1,5 @@
 package com.hire10x.team.Service;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hire10x.team.Entity.Team;
 import com.hire10x.team.Exceptions.TeamDuplicateException;
 import com.hire10x.team.Mapper.TeamMapper;
@@ -10,6 +7,7 @@ import com.hire10x.team.Models.TeamModel;
 import com.hire10x.team.Models.TeamModelRequest;
 import com.hire10x.team.Models.TeamModelResponse;
 import com.hire10x.team.Repository.TeamRepository;
+import com.hire10x.team.utils.CommonUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -37,13 +35,11 @@ public class TeamServiceImpl implements TeamService {
     TeamModelResponse response;
 
     public TeamModelResponse createTeam(TeamModelRequest teamModelRequest) {
-        if (teamModelRequest.getName() == null) {
-            throw new NullPointerException("Team name cannot be null");
-        }
+        CommonUtil.validateNotNull(teamModelRequest.getName(), "Team name cannot be null");
         Team team = this.teamMapper.requestModelToEntity(teamModelRequest);
         Optional<Team> existingTeam = this.teamRepo.findByName(team.getName());
         if (existingTeam.isPresent()) {
-            logger.log(Level.WARNING, "Team name already in use: " + team.getName());
+            CommonUtil.logInfo(Level.WARNING, "Team name already in use: " + team.getName());
             throw new TeamDuplicateException("Team name already in use");
         } else {
             team.setCreatedAt(new Date());
@@ -53,7 +49,7 @@ public class TeamServiceImpl implements TeamService {
             } catch (Exception e) {
                 throw new DataAccessResourceFailureException("An error occurred while saving the team details");
             }
-            logger.log(Level.INFO, "Team created: " + savedTeam.getName());
+            CommonUtil.logInfo(Level.INFO, "Team created: " + savedTeam.getName());
             response.setTeamId(savedTeam.getTeamId() != null ? String.valueOf(savedTeam.getTeamId()) : null);
             response.setMessage("Team created successfully");
             return response;
@@ -90,10 +86,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public TeamModel updateTeam(TeamModelRequest teamModelRequest, Long teamId) {
         Optional<Team> teamOptional = teamRepo.findById(teamId);
-        if (teamOptional.isEmpty()) {
-            logger.info("No Team found with ID: " + teamId);
-            throw new EntityNotFoundException("No team details present for given teamId");
-        }
+        CommonUtil.validateEmptyObject(teamOptional, "No team details present for given teamId: " + teamId);
         Team existingTeam = teamOptional.get();
         if (teamModelRequest.getName() != null) {
             existingTeam.setName(teamModelRequest.getName());
@@ -122,7 +115,7 @@ public class TeamServiceImpl implements TeamService {
             throw new DataAccessResourceFailureException("An error occurred while updating the team details");
         }
         TeamModel teamModel = teamMapper.entityToModel(team);
-        logger.info("Team with ID " + teamId + " updated successfully");
+        CommonUtil.logInfo(Level.INFO, "Team with ID " + teamId + " updated successfully");
         return teamModel;
     }
 }
