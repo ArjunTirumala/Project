@@ -38,55 +38,47 @@ public class TeamServiceImpl implements TeamService {
         CommonUtil.validateNotNull(teamModelRequest.getName(), "Team name cannot be null");
         Team team = this.teamMapper.requestModelToEntity(teamModelRequest);
         Optional<Team> existingTeam = this.teamRepo.findByName(team.getName());
-        if (existingTeam.isPresent()) {
-            CommonUtil.logInfo(Level.WARNING, "Team name already in use: " + team.getName());
-            throw new TeamDuplicateException("Team name already in use");
-        } else {
-            team.setCreatedAt(new Date());
-            Team savedTeam = null;
-            try {
-                savedTeam = this.teamRepo.save(team);
-            } catch (Exception e) {
-                throw new DataAccessResourceFailureException("An error occurred while saving the team details");
-            }
-            CommonUtil.logInfo(Level.INFO, "Team created: " + savedTeam.getName());
-            response.setTeamId(savedTeam.getTeamId() != null ? String.valueOf(savedTeam.getTeamId()) : null);
-            response.setMessage("Team created successfully");
-            return response;
+        CommonUtil.validateNonEmptyObject(existingTeam, "Team name already in use");
+        team.setCreatedAt(new Date());
+        Team savedTeam = null;
+        try {
+            savedTeam = this.teamRepo.save(team);
+        } catch (Exception e) {
+            throw new DataAccessResourceFailureException("An error occurred while saving the team details");
         }
+        CommonUtil.logInfo(Level.INFO, "Team created: " + savedTeam.getName());
+        response.setTeamId(savedTeam.getTeamId() != null ? String.valueOf(savedTeam.getTeamId()) : null);
+        response.setMessage("Team created successfully");
+        return response;
     }
 
     @Override
     public TeamModel getTeam(String teamName) {
         Optional<Team> teamOptional = teamRepo.findByName(teamName);
-        if (teamOptional.isPresent()) {
-            Team team = teamOptional.get();
-            TeamModel teamModel = teamMapper.entityToModel(team);
-            return teamModel;
-        } else {
-            throw new EntityNotFoundException("No team details present for given teamName");
-        }
+        CommonUtil.validateEmptyObjects(teamOptional, "No team details present for given teamName");
+        Team team = teamOptional.get();
+        TeamModel teamModel = teamMapper.entityToModel(team);
+        return teamModel;
+
     }
 
     @Override
     public List<TeamModel> searchTeam(String teamName) {
         List<Team> teamList = teamRepo.searchByName(teamName);
-        if (!teamList.isEmpty()) {
-            List<TeamModel> teamModelList = new ArrayList<>();
-            for(Team team: teamList) {
-                TeamModel teamModel = teamMapper.entityToModel(team);
-                teamModelList.add(teamModel);
-            }
-            return teamModelList;
-        } else {
-            throw new EntityNotFoundException("No team details present for given teamName");
+        CommonUtil.validateEmptyList(teamList, "No team details present for given teamName");
+        List<TeamModel> teamModelList = new ArrayList<>();
+        for (Team team : teamList) {
+            TeamModel teamModel = teamMapper.entityToModel(team);
+            teamModelList.add(teamModel);
         }
+        return teamModelList;
+
     }
 
     @Override
     public TeamModel updateTeam(TeamModelRequest teamModelRequest, Long teamId) {
         Optional<Team> teamOptional = teamRepo.findById(teamId);
-        CommonUtil.validateEmptyObject(teamOptional, "No team details present for given teamId: " + teamId);
+        CommonUtil.validateEmptyObjects(teamOptional, "No team details present for given teamId: " + teamId);
         Team existingTeam = teamOptional.get();
         if (teamModelRequest.getName() != null) {
             existingTeam.setName(teamModelRequest.getName());
