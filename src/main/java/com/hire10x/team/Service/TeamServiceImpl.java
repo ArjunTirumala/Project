@@ -89,7 +89,7 @@ public class TeamServiceImpl implements TeamService {
             if (teamModelRequest.getUserIds() != null) {
             List<String> existingUserIds = existingTeam.getUserIds();
             List<String> newUserIds = teamModelRequest.getUserIds();
-
+            CommonUtil.checkAndConvertNullToEmptyList(existingUserIds);
             for (String userId : newUserIds) {
                 if (!existingUserIds.contains(userId)) {
                     existingUserIds.add(userId);

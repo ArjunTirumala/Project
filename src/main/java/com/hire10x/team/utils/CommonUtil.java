@@ -4,6 +4,7 @@ import com.hire10x.team.Entity.Team;
 import com.hire10x.team.Exceptions.TeamDuplicateException;
 import jakarta.persistence.EntityNotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -40,4 +41,8 @@ public class CommonUtil {
         logger.log(level, message);
     }
 
+    public static List<String> checkAndConvertNullToEmptyList(List<String> existingUserIds) {
+        if(existingUserIds == null) return new ArrayList<>();
+        return existingUserIds;
+    }
 }
